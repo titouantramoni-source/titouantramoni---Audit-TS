@@ -782,7 +782,7 @@
      carries its own 6s failsafe, so a script error can never leave the page
      covered. Only transform/opacity are animated. */
   .intro{display:none;position:fixed;inset:0;z-index:1000;}
-  html.intro-on .intro{display:block;animation:intro-failsafe 0s linear 6s forwards;}
+  html.intro-on .intro{display:block;animation:intro-failsafe 0s linear 8s forwards;}
   .intro-pane{position:absolute;left:0;right:0;height:50%;background:var(--paper);will-change:transform;}
   .intro-pane--t{top:0;}
   .intro-pane--b{bottom:0;}
@@ -816,19 +816,19 @@
   .intro-skip:hover{border-bottom-color:var(--ivory);}
   .intro-skip:focus-visible{outline:2px solid var(--bronze);outline-offset:4px;}
 
-  html.intro-go .intro-pane--t{animation:intro-open-t .9s cubic-bezier(.76,0,.24,1) 1.85s forwards;}
-  html.intro-go .intro-pane--b{animation:intro-open-b .9s cubic-bezier(.76,0,.24,1) 1.85s forwards;}
+  html.intro-go .intro-pane--t{animation:intro-open-t .9s cubic-bezier(.76,0,.24,1) 3.3s forwards;}
+  html.intro-go .intro-pane--b{animation:intro-open-b .9s cubic-bezier(.76,0,.24,1) 3.3s forwards;}
   html.intro-go .intro-name span{
     animation:intro-up .55s cubic-bezier(.22,.61,.36,1) both;animation-delay:calc(.15s + var(--i) * .035s);
   }
   html.intro-go .intro-line{
-    animation:intro-line .8s cubic-bezier(.65,0,.35,1) .35s forwards,intro-fade .3s ease 1.8s forwards;
+    animation:intro-line .8s cubic-bezier(.65,0,.35,1) .35s forwards,intro-fade .3s ease 3.25s forwards;
   }
-  html.intro-go .intro-name{animation:intro-fade .55s ease-in 1.9s forwards;}
-  html.intro-go .intro-sub{animation:intro-fade .55s ease-in 1.9s forwards;}
+  html.intro-go .intro-name{animation:intro-fade .55s ease-in 3.35s forwards;}
+  html.intro-go .intro-sub{animation:intro-fade .55s ease-in 3.35s forwards;}
   html.intro-go .intro-sig{animation:intro-up .6s ease 1s forwards;}
-  html.intro-go .intro-tag{animation:intro-up .6s ease 1.35s forwards;}
-  html.intro-go .intro-skip{animation:intro-fade .3s ease 1.85s forwards;}
+  html.intro-go .intro-tag{animation:intro-up .6s ease 1.5s forwards;}
+  html.intro-go .intro-skip{animation:intro-fade .3s ease 3.3s forwards;}
 
   @keyframes intro-up{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   @keyframes intro-in{from{opacity:0;}to{opacity:1;}}
@@ -842,12 +842,12 @@
      fades — no sliding, no per-letter travel — ending in one overlay fade. */
   @media (prefers-reduced-motion:reduce){
     .intro-line{transform:none;opacity:0;}
-    html.intro-go .intro{animation:intro-fade .6s ease 2.1s forwards;}
+    html.intro-go .intro{animation:intro-fade .6s ease 3.3s forwards;}
     html.intro-go .intro-pane--t,html.intro-go .intro-pane--b,html.intro-go .intro-name,html.intro-go .intro-sub{animation:none;}
     html.intro-go .intro-name span{animation:intro-in .7s ease .2s both;}
     html.intro-go .intro-line{animation:intro-in .6s ease .4s forwards;}
     html.intro-go .intro-sig{animation:intro-in .6s ease 1s forwards;}
-    html.intro-go .intro-tag{animation:intro-in .6s ease 1.3s forwards;}
+    html.intro-go .intro-tag{animation:intro-in .6s ease 1.5s forwards;}
     html.intro-go .intro-skip{animation:none;}
   }
   html.intro-skip .intro{animation:intro-fade .3s ease forwards;pointer-events:none;}
@@ -911,7 +911,7 @@
     ]).then(go, go);
   } else { go(); }
   setTimeout(go, 900);
-  setTimeout(end, 4800);
+  setTimeout(end, 7000);
 })();
 </script>
 
