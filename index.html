@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+(function(){try{
+  var k='intro-seen:at';
+  if(sessionStorage.getItem(k)) return;
+  sessionStorage.setItem(k,'1');
+  document.documentElement.classList.add('intro-on');
+}catch(e){}})();
+</script>
 <title>Titouan Tramoni — Analyse Financière</title>
 <meta name="description" content="Analyses financières de LVMH et Hermès, calculateur de ratios et parcours de Titouan Tramoni, candidat à un Master de finance d'entreprise (Private Equity &amp; M&amp;A).">
 <meta property="og:type" content="website">
@@ -766,9 +774,146 @@
     .reco-card{grid-template-columns:1fr;gap:24px;padding:32px 26px;}
     .reco-download{align-self:stretch;justify-content:center;}
   }
+
+  /* ---------- intro (two kaki panels split along a bronze line) ----------
+     Hidden unless <head> adds html.intro-on (first visit of the session), so
+     no-JS and repeat visits never see it. Everything is a CSS timeline that
+     starts when html.intro-go is added (after the fonts are ready); it also
+     carries its own 6s failsafe, so a script error can never leave the page
+     covered. Only transform/opacity are animated. */
+  .intro{display:none;position:fixed;inset:0;z-index:1000;}
+  html.intro-on .intro{display:block;animation:intro-failsafe 0s linear 6s forwards;}
+  .intro-pane{position:absolute;left:0;right:0;height:50%;background:var(--paper);will-change:transform;}
+  .intro-pane--t{top:0;}
+  .intro-pane--b{bottom:0;}
+  .intro-name{
+    position:absolute;left:0;right:0;bottom:clamp(14px,2.6vw,22px);text-align:center;white-space:nowrap;
+    font-family:'Newsreader',serif;font-weight:500;font-size:clamp(19px,4.4vw,38px);
+    letter-spacing:.14em;color:var(--ivory);
+  }
+  .intro-name span{display:inline-block;opacity:0;}
+  .intro-sub{
+    position:absolute;left:0;right:0;top:clamp(14px,2.6vw,22px);padding:0 24px;text-align:center;
+    font-family:'Newsreader',serif;
+  }
+  .intro-sig{
+    font-weight:600;font-size:clamp(11px,1.9vw,16px);letter-spacing:.1em;
+    color:var(--ivory);opacity:0;
+  }
+  .intro-tag{
+    margin-top:10px;font-style:italic;font-weight:400;font-size:clamp(13px,2.2vw,18px);
+    line-height:1.4;color:var(--ivory);opacity:0;
+  }
+  .intro-line{
+    position:absolute;left:50%;top:50%;z-index:2;width:min(240px,50vw);height:1px;
+    margin-left:calc(min(240px,50vw) / -2);background:var(--bronze);transform:scaleX(0);
+  }
+  .intro-skip{
+    position:absolute;right:24px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:3;
+    padding:12px 4px;border:0;border-bottom:1px solid rgba(246,242,228,.5);background:none;
+    font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--ivory);cursor:pointer;
+  }
+  .intro-skip:hover{border-bottom-color:var(--ivory);}
+  .intro-skip:focus-visible{outline:2px solid var(--bronze);outline-offset:4px;}
+
+  html.intro-go .intro-pane--t{animation:intro-open-t .9s cubic-bezier(.76,0,.24,1) 1.85s forwards;}
+  html.intro-go .intro-pane--b{animation:intro-open-b .9s cubic-bezier(.76,0,.24,1) 1.85s forwards;}
+  html.intro-go .intro-name span{
+    animation:intro-up .55s cubic-bezier(.22,.61,.36,1) both;animation-delay:calc(.15s + var(--i) * .035s);
+  }
+  html.intro-go .intro-line{
+    animation:intro-line .8s cubic-bezier(.65,0,.35,1) .35s forwards,intro-fade .3s ease 1.8s forwards;
+  }
+  html.intro-go .intro-name{animation:intro-fade .55s ease-in 1.9s forwards;}
+  html.intro-go .intro-sub{animation:intro-fade .55s ease-in 1.9s forwards;}
+  html.intro-go .intro-sig{animation:intro-up .6s ease 1s forwards;}
+  html.intro-go .intro-tag{animation:intro-up .6s ease 1.35s forwards;}
+  html.intro-go .intro-skip{animation:intro-fade .3s ease 1.85s forwards;}
+
+  @keyframes intro-up{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @keyframes intro-in{from{opacity:0;}to{opacity:1;}}
+  @keyframes intro-line{to{transform:scaleX(1);}}
+  @keyframes intro-open-t{to{transform:translateY(-101%);}}
+  @keyframes intro-open-b{to{transform:translateY(101%);}}
+  @keyframes intro-fade{to{opacity:0;visibility:hidden;}}
+  @keyframes intro-failsafe{to{opacity:0;visibility:hidden;pointer-events:none;}}
+
+  /* prefers-reduced-motion: the intro still plays, but as a calm sequence of
+     fades — no sliding, no per-letter travel — ending in one overlay fade. */
+  @media (prefers-reduced-motion:reduce){
+    .intro-line{transform:none;opacity:0;}
+    html.intro-go .intro{animation:intro-fade .6s ease 2.1s forwards;}
+    html.intro-go .intro-pane--t,html.intro-go .intro-pane--b,html.intro-go .intro-name,html.intro-go .intro-sub{animation:none;}
+    html.intro-go .intro-name span{animation:intro-in .7s ease .2s both;}
+    html.intro-go .intro-line{animation:intro-in .6s ease .4s forwards;}
+    html.intro-go .intro-sig{animation:intro-in .6s ease 1s forwards;}
+    html.intro-go .intro-tag{animation:intro-in .6s ease 1.3s forwards;}
+    html.intro-go .intro-skip{animation:none;}
+  }
+  html.intro-skip .intro{animation:intro-fade .3s ease forwards;pointer-events:none;}
+  @media print{.intro{display:none !important;}}
 </style>
 </head>
 <body>
+<div class="intro" id="intro-screen">
+  <div class="intro-pane intro-pane--t" aria-hidden="true"><div class="intro-name"><span style="--i:0">T</span><span style="--i:1">I</span><span style="--i:2">T</span><span style="--i:3">O</span><span style="--i:4">U</span><span style="--i:5">A</span><span style="--i:6">N</span><span style="--i:7">&nbsp;</span><span style="--i:8">T</span><span style="--i:9">R</span><span style="--i:10">A</span><span style="--i:11">M</span><span style="--i:12">O</span><span style="--i:13">N</span><span style="--i:14">I</span></div></div>
+  <div class="intro-line" aria-hidden="true"></div>
+  <div class="intro-pane intro-pane--b" aria-hidden="true"><div class="intro-sub"><div class="intro-sig">AUDIT &amp; TRANSACTION SERVICES</div><div class="intro-tag">Beyond the numbers. Understanding businesses.</div></div></div>
+  <button type="button" class="intro-skip" id="intro-skip">Skip intro</button>
+</div>
+<script>
+(function(){
+  var de = document.documentElement;
+  var el = document.getElementById('intro-screen');
+  if(!el || !de.classList.contains('intro-on')) return;
+  var done = false, started = false;
+
+  function end(){
+    if(done) return;
+    done = true;
+    de.classList.remove('intro-on', 'intro-go', 'intro-skip');
+    window.removeEventListener('wheel', skip);
+    window.removeEventListener('touchstart', skip);
+    window.removeEventListener('keydown', onKey);
+    if(el.parentNode) el.parentNode.removeChild(el);
+  }
+  function skip(){
+    if(done || de.classList.contains('intro-skip')) return;
+    de.classList.add('intro-skip');
+    setTimeout(end, 350);
+  }
+  function onKey(e){
+    if(e.key === 'Escape' || e.key === 'Enter' || e.key === ' ' || e.key.indexOf('Arrow') === 0 || e.key.indexOf('Page') === 0) skip();
+  }
+  function go(){
+    if(started || done) return;
+    started = true;
+    de.classList.add('intro-go');
+  }
+
+  el.addEventListener('animationend', function(e){
+    if(e.target === el && e.animationName === 'intro-fade') end();
+    if(e.animationName === 'intro-open-t') end();
+  });
+  el.addEventListener('click', skip);
+  window.addEventListener('wheel', skip, {passive:true});
+  window.addEventListener('touchstart', skip, {passive:true});
+  window.addEventListener('keydown', onKey);
+
+  if(document.fonts && document.fonts.load){
+    Promise.race([
+      Promise.all([
+        document.fonts.load('500 20px Newsreader'),
+        document.fonts.load('600 16px Newsreader'),
+        document.fonts.load('italic 400 16px Newsreader')
+      ]),
+      new Promise(function(r){ setTimeout(r, 800); })
+    ]).then(go, go);
+  } else { go(); }
+  setTimeout(go, 900);
+  setTimeout(end, 4800);
+})();
+</script>
 
 <div class="util-bar">
   <div class="wrap">

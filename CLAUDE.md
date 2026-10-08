@@ -55,6 +55,29 @@ The **TradingView ticker-tape widget** (`.util-ticker`, showing live LVMH/Hermè
 
 Drawer link labels/order are fixed content, not to be changed without being asked: `Accueil · Intro · Parcours · CV · Recommandations · Valorisation · Analyse Boursière · En dehors des chiffres · Contact` — matching hrefs `#accueil · #intro · #parcours · #cv · #recommandations · #calculateur · #analyses · #personal · #contact`. This mirrors the actual document order below; keep the two in sync if either changes. `#calculateur`'s nav label AND on-page `<h2>` are both "Valorisation" (renamed from "Calculateur" in the nav and "Analyse financière" in the heading, at the user's explicit request, alongside moving the section ahead of `#analyses`) — only the `id` (`calculateur`) is unchanged, see the Calculateur section below. `#analyses`'s nav label AND on-page `<h2>` are both "Analyse Boursière" (renamed from "Analyse" in the nav and "Analyses" in the heading, at the user's explicit request) — only the `id` (`analyses`) is unchanged.
 
+## Intro animation (two kaki panels, once per session)
+
+A full-screen opening sequence plays on the first visit of each browser-tab session: two `--paper` (kaki) panels meet along a 1px bronze line; `TITOUAN TRAMONI` sits above the line, the site's signature below it (`AUDIT & TRANSACTION SERVICES` + the tagline "Beyond the numbers. Understanding businesses."); then the line becomes the seam and the panels slide apart (top up, bottom down) onto the hero. ~2.75s after the fonts are ready. The three type voices deliberately reuse the hero's own (name = `.hero-wordmark`, signature = `.eyebrow`, tagline = hero `h1` italic), so the intro and the site read as one piece. Same palette as the page (kaki / ivory / bronze) on all four sites — no new colors.
+
+Three pieces, all inline in `index.html`, nothing external:
+
+1. **A `<head>` script** (right after the viewport meta, so Google Analytics stays the first thing in `<head>`) checks `sessionStorage['intro-seen:<site>']`; if unset it sets it and adds `html.intro-on`. It marks the intro as seen when it *starts*, so a reload mid-intro doesn't replay it. If `sessionStorage` is unavailable the intro is simply skipped (page stays fully usable).
+2. **A CSS block** at the end of the `<style>` (`/* ---------- intro ... */`). `.intro` is `display:none` unless `html.intro-on`, so no-JS and repeat visits never see it. The whole timeline is CSS keyframes keyed off `html.intro-go` (added by JS once the Newsreader weights are loaded, max 0.9s); only `transform`/`opacity` animate, so there is no layout shift. It carries its own 6s `intro-failsafe` animation: even if every script fails, the overlay hides itself.
+3. **The overlay markup + one inline script**, as the first child of `<body>` (so `Skip intro` is the first tab stop). The script only does start (`intro-go`), skip, and cleanup (`end()` removes the node and the `intro-*` classes on the top pane's `intro-open-t` `animationend`, or the overlay's own `intro-fade`; a 4.8s timer is a last-resort fallback).
+
+**Skip:** the `Skip intro` button, a click on the overlay, `wheel`, `touchstart`, or Escape/Enter/Space/Arrow/Page keys all fade it out in ~0.35s. Never block a recruiter who wants the CV.
+
+**Always plays — by explicit request.** It is *not* skipped for `prefers-reduced-motion` nor for deep links (`#cv`, `#parcours`…). Under reduced motion it plays a calmer variant (the `@media (prefers-reduced-motion:reduce)` block inside the intro CSS): no panel movement and no per-letter travel, just fades, ending in one overlay fade (~2.7s). Replays are prevented only by the session flag above — a new tab replays it.
+
+Gotchas:
+- **The overlay id is `intro-screen`, not `intro`** — `#intro` is the Intro *section* (nav anchor). They collided once; duplicate ids would also make `#intro` links resolve to the overlay while it exists.
+- Tagline and `Skip intro` use `--ivory`, not `--muted-light`: ivory on `--paper` is ~4.6:1, `--muted-light` only ~3.7:1.
+- `z-index:1000`, above `.util-bar` (20) and the nav drawer/backdrop (40/50).
+- `html.intro-skip .intro{...}` must stay the **last** intro rule: it has the same specificity as `html.intro-go .intro` (reduced-motion block) and relies on source order to win.
+- The name/signature fade out (`intro-fade`, 1.9s) while their panels slide, so the signature doesn't sit on top of the hero headline mid-reveal.
+- Per site, only two strings and the storage key differ (`intro-seen:ma|pe|vc|at` and the signature/tagline); the CSS/JS is identical.
+- **Testing caveat:** a hidden Browser pane freezes animations and throttles timers, so real-time playback can't be observed there. Verify frames by pausing and scrubbing (`document.getAnimations()` → `pause()` + `currentTime`) on a *fresh load each time* (the 4.8s fallback timer will otherwise remove the overlay mid-test), and verify the end logic by dispatching synthetic `animationend` events. `sessionStorage` is per origin — clear it on the origin you are testing.
+
 ## Content sections (in document order)
 
 1. `<section class="hero-video" id="accueil">` — full-bleed hero video (Corsica mountains, external Pexels asset) with the eyebrow/h1/paragraph centered over it and CV download + LinkedIn links anchored at the bottom. This is "Accueil" in the nav.
